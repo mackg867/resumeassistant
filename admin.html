@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .container {
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0033A0;
+        }
+
+        .file-not-found {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+
+        <form method="GET" action="/admin" class="filter-form">
+            <label for="filter-location">Location:</label>
+            <select name="location" id="filter-location">
+                <option value="">All</option>
+                <option value="Yes" {% if request.args.get('location') == "Yes" %}selected{% endif %}>Yes (Based in the US)</option>
+                <option value="No" {% if request.args.get('location') == "No" %}selected{% endif %}>No (Not based in the US)</option>
+            </select>
+        
+            <label for="filter-education">Education Level:</label>
+            <select name="education_level" id="filter-education">
+                <option value="">All</option>
+                <option value="Undergraduate" {% if request.args.get('education_level') == "Undergraduate" %}selected{% endif %}>Undergraduate</option>
+                <option value="Masters" {% if request.args.get('education_level') == "Masters" %}selected{% endif %}>Masters</option>
+                <option value="PhD" {% if request.args.get('education_level') == "PhD" %}selected{% endif %}>PhD</option>
+                <option value="Not Applicable" {% if request.args.get('education_level') == "Not Applicable" %}selected{% endif %}>Not Applicable</option>
+            </select>
+        
+            <label for="filter-enrollment">Enrollment Status:</label>
+            <select name="enrollment_status" id="filter-enrollment">
+                <option value="">All</option>
+                <option value="No" {% if request.args.get('enrollment_status') == "No" %}selected{% endif %}>No</option>
+                <option value="Yes - Undergraduate" {% if request.args.get('enrollment_status') == "Yes - Undergraduate" %}selected{% endif %}>Yes - Undergraduate</option>
+                <option value="Yes - Graduate" {% if request.args.get('enrollment_status') == "Yes - Graduate" %}selected{% endif %}>Yes - Graduate</option>
+                <option value="Yes - PhD" {% if request.args.get('enrollment_status') == "Yes - PhD" %}selected{% endif %}>Yes - PhD</option>
+            </select>
+        
+            <button type="submit">Apply Filters</button>
+        </form>
+
+        <!-- Display the currently applied filters -->
+        <div class="filter-applied">
+            {% if request.args.get('location') or request.args.get('education_level') or request.args.get('enrollment_status') %}
+                <p>Filters Applied:
+                    {% if request.args.get('location') %} Location: {{ request.args.get('location') }} {% endif %}
+                    {% if request.args.get('education_level') %} | Education Level: {{ request.args.get('education_level') }} {% endif %}
+                    {% if request.args.get('enrollment_status') %} | Enrollment Status: {{ request.args.get('enrollment_status') }} {% endif %}
+                </p>
+            {% endif %}
+        </div>
+        
+
+        <!-- Display Submissions Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Resume Filename</th>
+                    <th>Location</th>
+                    <th>Education Level</th>
+                    <th>Enrollment Status</th>
+                    <!-- Add a new column for actions -->
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for submission in submissions %}
+                <tr>
+                    <td><a href="{{ submission.download_link }}">{{ submission.filename }}</a></td>
+                    <td>{{ submission.location }}</td>
+                    <td>{{ submission.education_level }}</td>
+                    <td>{{ submission.enrollment_status }}</td>
+                    <!-- Add the delete button here -->
+                    <td>
+                        <form action="/admin/delete/{{ submission.filename }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this resume?');">
+                            <button type="submit" class="delete-button">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    </div>
+
+</body>
+</html>

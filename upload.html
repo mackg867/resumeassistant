@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Form</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .admin-login-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Admin Login Button -->
+    <a href="/admin-login" class="admin-login-btn">Admin Login</a>
+
+    <div class="container">
+        {% if success %}
+        <!-- Success message shown after submission -->
+        <h1>Thank you!</h1>
+        <p>Your application has been received successfully. We will be in touch soon.</p>
+        {% else %}
+        <h1>Application Form</h1>
+        <p class="instructions">Each question must be answered to submit an application.</p>
+
+        <!-- Form for file upload -->
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+
+            <div class="form-group">
+                <label for="location">Are you based within the United States?</label>
+                <select name="location" id="location" required>
+                    <option value="">Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+
+            <div><br /></div>
+
+            <div class="form-group">
+                <label for="education_level">What is the highest level of education you have completed?</label>
+                <select name="education_level" id="education_level" required>
+                    <option value="">Select</option>
+                    <option value="Undergraduate">Undergraduate</option>
+                    <option value="Masters">Masters</option>
+                    <option value="PhD">PhD</option>
+                    <option value="Not Applicable">Not Applicable</option>
+                </select>
+            </div>
+
+            <div><br /></div>
+
+            <div class="form-group">
+                <label for="enrollment_status">Are you currently enrolled in an education program? If so, what level?</label>
+                <select name="enrollment_status" id="enrollment_status" required>
+                    <option value="">Select</option>
+                    <option value="No">No</option>
+                    <option value="Yes - Undergraduate">Yes - Undergraduate</option>
+                    <option value="Yes - Graduate">Yes - Graduate</option>
+                    <option value="Yes - PhD">Yes - PhD</option>
+                </select>
+            </div>
+
+            <!-- Centered resume upload button -->
+            <div class="resume-upload">
+                <label for="resume" class="resume-button"><i class="fas fa-upload"></i> Choose your resume (PDF or DOC)</label>
+                <input type="file" id="resume" name="resume" accept=".pdf, .doc, .docx" required>
+                <div class="file-name" id="file-name">No file selected</div>
+            </div>
+
+            <button type="submit"><i class="fas fa-paper-plane"></i> Submit Application</button>
+        </form>
+        {% endif %}
+        <script>
+            // Listen for changes on the file input and display the selected file name
+            document.getElementById('resume').addEventListener('change', function() {
+                const fileName = this.files[0]?.name || "No file selected";  // Safely access the file name
+                document.getElementById('file-name').textContent = fileName;  // Update the file name in the UI
+            });
+        </script>
+    </div>
+
+</body>
+</html>
